@@ -14,12 +14,18 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const displayedChannels = useMemo(() => {
+    console.log("displayedChannels recalculating - selectedCategory:", selectedCategory);
+    console.log("displayedChannels recalculating - categorized:", Object.keys(categorized));
+    
     if (selectedCategory === "كل القنوات") {
+      console.log("Showing all channels:", allChannels.length);
       return allChannels;
     }
     if (selectedCategory && categorized[selectedCategory]) {
+      console.log("Showing category:", selectedCategory, "count:", categorized[selectedCategory].length);
       return categorized[selectedCategory];
     }
+    console.log("No channels to display");
     return [];
   }, [selectedCategory, categorized, allChannels]);
 

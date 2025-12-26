@@ -83,14 +83,18 @@ function parseM3U(content: string, source: 'global' | 'arab'): Channel[] {
 }
 
 function categorizeChannels(channels: Channel[]): Record<string, Channel[]> {
-  const categorized: Record<string, Channel[]> = {};
-  const assigned = new Set<string>();
-
-  // Initialize categories
-  Object.keys(CATEGORY_KEYWORDS).forEach(cat => {
-    categorized[cat] = [];
-  });
-  categorized["أخرى"] = [];
+  const categorized: Record<string, Channel[]> = {
+    "أطفال": [],
+    "مسلسلات": [],
+    "رياضة": [],
+    "أفلام": [],
+    "أخبار": [],
+    "موسيقى": [],
+    "ترفيه": [],
+    "توثيقي": [],
+    "دين": [],
+    "أخرى": []
+  };
 
   // Categorize channels
   channels.forEach(channel => {
@@ -102,19 +106,25 @@ function categorizeChannels(channels: Channel[]): Record<string, Channel[]> {
       if (keywords.some(kw => lowerName.includes(kw) || lowerGroup.includes(kw))) {
         if (categorized[category].length < 50) {
           categorized[category].push(channel);
-          assigned.add(channel.id);
           found = true;
           break;
         }
       }
     }
 
+    // Add to "أخرى" if not categorized
     if (!found && categorized["أخرى"].length < 100) {
       categorized["أخرى"].push(channel);
-      assigned.add(channel.id);
     }
   });
 
+  // Log for debugging
+  const stats: any = {};
+  Object.entries(categorized).forEach(([cat, chs]) => {
+    if (chs.length > 0) stats[cat] = chs.length;
+  });
+  console.log("Categorized channels:", stats);
+  
   return categorized;
 }
 
@@ -157,6 +167,10 @@ export function useChannels() {
 export function useCategorizedChannels() {
   const { data: channels = [], ...rest } = useChannels();
   const categorized = categorizeChannels(channels);
+  
+  console.log("useCategorizedChannels - channels count:", channels.length);
+  console.log("useCategorizedChannels - categorized keys:", Object.keys(categorized));
+  
   return {
     ...rest,
     categorized,

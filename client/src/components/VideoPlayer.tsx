@@ -1,5 +1,4 @@
-import ReactPlayer from 'react-player';
-import { PlayCircle, AlertCircle, Tv } from 'lucide-react';
+import { PlayCircle, AlertCircle } from 'lucide-react';
 import { Channel } from '@/hooks/use-iptv';
 import { useState } from 'react';
 
@@ -30,17 +29,18 @@ export function VideoPlayer({ channel }: VideoPlayerProps) {
         </div>
       ) : (
         <>
-          <ReactPlayer
-            url={channel.url as any}
+          <video
             controls
-            playing
-            width="100%"
-            height="100%"
-            onError={(error: any) => {
-              console.error("Player Error:", error);
+            autoPlay
+            style={{ width: '100%', height: '100%', objectFit: 'contain', backgroundColor: '#000' }}
+            onError={(e: any) => {
+              console.error("Video Error:", e);
               setPlayerError(true);
             }}
-          />
+          >
+            <source src={channel.url} type="application/x-mpegURL" />
+            Your browser does not support HTML5 video.
+          </video>
           
           {/* Channel Info Overlay */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 text-foreground">
