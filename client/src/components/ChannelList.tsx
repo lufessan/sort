@@ -1,7 +1,9 @@
 import { useState, useMemo } from "react";
-import { FixedSizeList as List } from "react-window";
+import * as ReactWindow from "react-window";
 import { AutoSizer } from "react-virtualized-auto-sizer";
 import { Search, Star, Tv } from "lucide-react";
+
+const { FixedSizeList } = ReactWindow;
 import { Channel } from "@/hooks/use-iptv";
 import { useFavorites, useAddFavorite, useRemoveFavorite } from "@/hooks/use-favorites";
 import { cn } from "@/lib/utils";
@@ -128,14 +130,14 @@ export function ChannelList({ channels, isLoading, onSelectChannel, selectedChan
         ) : (
           <AutoSizer>
             {({ height, width }: { height: number; width: number }) => (
-              <List
+              <FixedSizeList
                 height={height}
                 itemCount={filteredChannels.length}
                 itemSize={64}
                 width={width}
               >
                 {Row}
-              </List>
+              </FixedSizeList>
             )}
           </AutoSizer>
         )}

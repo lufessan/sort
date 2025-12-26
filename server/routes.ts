@@ -3,11 +3,24 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
+import axios from "axios";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Proxy for M3U fetching to avoid CORS issues
+  app.get("/api/proxy-m3u", async (req, res) => {
+    const url = req.query.url as string;
+    if (!url) return res.status(400).send("URL is required");
+    try {
+      const response = await axios.get(url, { responseType: "text" });
+      res.send(response.data);
+    } catch (error) {
+      res.status(500).send("Error fetching M3U");
+    }
+  });
+
   // Favorites API
   app.get(api.favorites.list.path, async (req, res) => {
     const favorites = await storage.getFavorites();

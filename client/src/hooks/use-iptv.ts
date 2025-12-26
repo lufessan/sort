@@ -9,7 +9,7 @@ export interface Channel {
   source: 'global' | 'arab';
 }
 
-const CORS_PROXY = "https://api.allorigins.win/raw?url=";
+const CORS_PROXY = "/api/proxy-m3u?url=";
 const PLAYLIST_GLOBAL = "https://iptv-org.github.io/iptv/index.m3u";
 const PLAYLIST_ARAB = "https://raw.githubusercontent.com/hemzaberkane/ARAB-IPTV/refs/heads/main/ARABIPTV.m3u";
 
