@@ -14,19 +14,20 @@ const PLAYLIST_GLOBAL = "https://iptv-org.github.io/iptv/index.m3u";
 const PLAYLIST_ARAB = "https://raw.githubusercontent.com/hemzaberkane/ARAB-IPTV/refs/heads/main/ARABIPTV.m3u";
 
 function parseM3U(content: string, source: 'global' | 'arab'): Channel[] {
-  const lines = content.split('\n');
+  console.log(`Parsing ${source} M3U, content length: ${content.length}`);
+  const lines = content.split(/\r?\n/);
   const channels: Channel[] = [];
   let currentChannel: Partial<Channel> = {};
 
   for (let line of lines) {
     line = line.trim();
+    if (!line) continue;
+    
     if (line.startsWith('#EXTINF:')) {
-      // Parse metadata
-      const info = line.substring(8);
-      const parts = info.split(',');
-      const name = parts[parts.length - 1].trim();
+      // Improved regex to handle various M3U formats
+      const infoMatch = line.match(/#EXTINF:[^,]*,(.*)/);
+      const name = infoMatch ? infoMatch[1].trim() : "Unknown Channel";
       
-      // Extract attributes like tvg-logo, group-title
       const logoMatch = line.match(/tvg-logo="([^"]*)"/);
       const groupMatch = line.match(/group-title="([^"]*)"/);
 
@@ -36,8 +37,7 @@ function parseM3U(content: string, source: 'global' | 'arab'): Channel[] {
         group: groupMatch ? groupMatch[1] : undefined,
         source
       };
-    } else if (line.startsWith('http')) {
-      // URL line
+    } else if (!line.startsWith('#') && (line.startsWith('http') || line.startsWith('https') || line.includes('://'))) {
       if (currentChannel.name) {
         channels.push({
           id: `${source}-${channels.length}-${currentChannel.name}`,
@@ -51,6 +51,7 @@ function parseM3U(content: string, source: 'global' | 'arab'): Channel[] {
       }
     }
   }
+  console.log(`Found ${channels.length} channels in ${source}`);
   return channels;
 }
 
