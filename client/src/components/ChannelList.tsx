@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { FixedSizeList as List } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
+import { AutoSizer } from "react-virtualized-auto-sizer";
 import { Search, Star, Tv } from "lucide-react";
 import { Channel } from "@/hooks/use-iptv";
 import { useFavorites, useAddFavorite, useRemoveFavorite } from "@/hooks/use-favorites";

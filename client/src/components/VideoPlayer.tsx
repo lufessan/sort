@@ -27,11 +27,6 @@ export function VideoPlayer({ channel }: VideoPlayerProps) {
           height="100%"
           controls
           playing
-          config={{
-            file: {
-              forceHLS: true,
-            }
-          }}
           onError={(e) => console.error("Player Error:", e)}
         />
         
