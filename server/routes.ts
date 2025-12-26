@@ -13,10 +13,19 @@ export async function registerRoutes(
   app.get("/api/proxy-m3u", async (req, res) => {
     const url = req.query.url as string;
     if (!url) return res.status(400).send("URL is required");
+    console.log(`Proxying request for: ${url}`);
     try {
-      const response = await axios.get(url, { responseType: "text" });
+      const response = await axios.get(url, { 
+        responseType: "text",
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        },
+        timeout: 10000 
+      });
+      console.log(`Success fetching ${url}, length: ${response.data.length}`);
       res.send(response.data);
-    } catch (error) {
+    } catch (error: any) {
+      console.error(`Error fetching ${url}:`, error.message);
       res.status(500).send("Error fetching M3U");
     }
   });

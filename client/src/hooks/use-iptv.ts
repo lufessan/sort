@@ -68,21 +68,20 @@ export function useChannels() {
         throw new Error("Failed to fetch playlists");
       }
 
-      const globalText = await globalRes.text();
-      const arabText = await arabRes.text();
+      console.log(`Global raw length: ${globalText.length}`);
+      console.log(`Arab raw length: ${arabText.length}`);
 
       const globalChannels = parseM3U(globalText, 'global');
       const arabChannels = parseM3U(arabText, 'arab');
 
-      // Merge and deduplicate by name
-      const allChannels = [...arabChannels, ...globalChannels]; // Prioritize Arab playlist
-      const seen = new Set();
-      const uniqueChannels = allChannels.filter(channel => {
-        const duplicate = seen.has(channel.name);
-        seen.add(channel.name);
-        return !duplicate;
-      });
+      console.log(`Parsed Global: ${globalChannels.length}`);
+      console.log(`Parsed Arab: ${arabChannels.length}`);
 
+      // Merge and deduplicate by name
+      const allChannels = [...arabChannels, ...globalChannels]; 
+      const uniqueChannels = Array.from(new Map(allChannels.map(c => [c.name, c])).values());
+
+      console.log(`Total unique channels: ${uniqueChannels.length}`);
       return uniqueChannels;
     },
     staleTime: 1000 * 60 * 60, // Cache for 1 hour
