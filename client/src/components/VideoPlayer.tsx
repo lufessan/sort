@@ -12,7 +12,7 @@ export function VideoPlayer({ channel }: VideoPlayerProps) {
 
   if (!channel) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground bg-black relative overflow-hidden">
+      <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground bg-black relative overflow-hidden rounded-2xl">
         <PlayCircle className="w-20 h-20 mb-4 opacity-20" />
         <h3 className="text-xl font-display font-semibold text-foreground">اختر قناة</h3>
         <p className="opacity-60 text-sm">اختر من القائمة لبدء البث</p>
@@ -21,7 +21,7 @@ export function VideoPlayer({ channel }: VideoPlayerProps) {
   }
 
   return (
-    <div className="w-full h-full relative bg-black overflow-hidden flex flex-col">
+    <div className="w-full h-full relative bg-black overflow-hidden flex flex-col rounded-2xl">
       {playerError ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black text-foreground gap-3">
           <AlertCircle className="w-12 h-12 text-destructive" />
@@ -31,12 +31,12 @@ export function VideoPlayer({ channel }: VideoPlayerProps) {
       ) : (
         <>
           <ReactPlayer
-            url={channel.url}
+            url={channel.url as any}
+            controls
+            playing
             width="100%"
             height="100%"
-            controls
-            playing={true}
-            onError={(error) => {
+            onError={(error: any) => {
               console.error("Player Error:", error);
               setPlayerError(true);
             }}

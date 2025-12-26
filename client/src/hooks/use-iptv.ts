@@ -26,6 +26,21 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
   "دين": ["islamic", "quran", "مستودع", "دين", "إسلام"],
 };
 
+function isValidStreamUrl(url: string): boolean {
+  try {
+    // Only accept HTTP/HTTPS URLs or common stream protocols
+    if (!url || typeof url !== 'string') return false;
+    const lower = url.toLowerCase();
+    return lower.startsWith('http://') || 
+           lower.startsWith('https://') || 
+           lower.startsWith('rtmp') ||
+           lower.includes('m3u8') ||
+           lower.includes('ts');
+  } catch {
+    return false;
+  }
+}
+
 function parseM3U(content: string, source: 'global' | 'arab'): Channel[] {
   console.log(`Parsing ${source} M3U, content length: ${content.length}`);
   const lines = content.split(/\r?\n/);
@@ -49,12 +64,12 @@ function parseM3U(content: string, source: 'global' | 'arab'): Channel[] {
         group: groupMatch ? groupMatch[1] : undefined,
         source
       };
-    } else if (!line.startsWith('#') && (line.startsWith('http') || line.startsWith('https') || line.includes('://'))) {
+    } else if (!line.startsWith('#') && isValidStreamUrl(line)) {
       if (currentChannel.name) {
         channels.push({
           id: `${source}-${channels.length}-${currentChannel.name}`,
           name: currentChannel.name,
-          url: line,
+          url: line.trim(),
           logo: currentChannel.logo,
           group: currentChannel.group,
           source
@@ -63,7 +78,7 @@ function parseM3U(content: string, source: 'global' | 'arab'): Channel[] {
       }
     }
   }
-  console.log(`Found ${channels.length} channels in ${source}`);
+  console.log(`Found ${channels.length} valid channels in ${source}`);
   return channels;
 }
 
