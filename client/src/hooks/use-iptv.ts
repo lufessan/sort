@@ -68,6 +68,9 @@ export function useChannels() {
         throw new Error("Failed to fetch playlists");
       }
 
+      const globalText = await globalRes.text();
+      const arabText = await arabRes.text();
+
       console.log(`Global raw length: ${globalText.length}`);
       console.log(`Arab raw length: ${arabText.length}`);
 
