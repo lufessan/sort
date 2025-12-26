@@ -1,82 +1,130 @@
-import { useState } from "react";
-import { ChannelList } from "@/components/ChannelList";
+import { useState, useMemo } from "react";
+import { ChannelGrid } from "@/components/ChannelGrid";
 import { VideoPlayer } from "@/components/VideoPlayer";
-import { useChannels, type Channel } from "@/hooks/use-iptv";
-import { LayoutGrid, Loader2 } from "lucide-react";
+import { useCategorizedChannels, type Channel } from "@/hooks/use-iptv";
+import { Loader2, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function Home() {
-  const { data: channels = [], isLoading, error } = useChannels();
-  const [selectedChannel, setSelectedChannel] = useState<Channel | undefined>();
+type ViewMode = "categories" | "channels";
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-destructive/10 border border-destructive/20 p-8 rounded-2xl max-w-md text-center">
-          <h2 className="text-xl font-bold text-destructive mb-2">Failed to Load Channels</h2>
-          <p className="text-muted-foreground">Please check your internet connection and try again.</p>
-        </div>
-      </div>
-    );
-  }
+export default function Home() {
+  const { categorized, allChannels, isLoading } = useCategorizedChannels();
+  const [selectedChannel, setSelectedChannel] = useState<Channel | undefined>();
+  const [viewMode, setViewMode] = useState<ViewMode>("categories");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const displayedChannels = useMemo(() => {
+    if (selectedCategory === "كل القنوات") {
+      return allChannels;
+    }
+    if (selectedCategory && categorized[selectedCategory]) {
+      return categorized[selectedCategory];
+    }
+    return [];
+  }, [selectedCategory, categorized, allChannels]);
+
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category);
+    setViewMode("channels");
+    setSelectedChannel(undefined);
+  };
+
+  const handleBackToCategories = () => {
+    setViewMode("categories");
+    setSelectedCategory(null);
+    setSelectedChannel(undefined);
+  };
 
   return (
-    <div className="min-h-screen h-screen w-full overflow-hidden flex flex-col md:flex-row-reverse relative">
-      {/* Background Decor Elements - Subtle */}
-      <div className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-accent/20 rounded-full blur-[100px] pointer-events-none" />
-
-      {/* RIGHT SIDEBAR: Channels (RTL Layout preferred by user request "Sidebar Right") */}
-      <motion.aside 
-        initial={{ x: 50, opacity: 0 }}
+    <div className="min-h-screen h-screen w-full bg-background overflow-hidden flex flex-col lg:flex-row">
+      {/* Sidebar / Channels Section */}
+      <motion.div
+        initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full md:w-[350px] lg:w-[400px] h-[40vh] md:h-full shrink-0 z-20 shadow-2xl shadow-black/5"
+        transition={{ duration: 0.3 }}
+        className="w-full lg:w-[30%] xl:w-[350px] h-[45vh] lg:h-full flex flex-col bg-secondary/20 border-b lg:border-b-0 lg:border-r border-white/10 overflow-hidden"
       >
-        <ChannelList 
-          channels={channels} 
-          isLoading={isLoading} 
-          onSelectChannel={setSelectedChannel}
-          selectedChannelId={selectedChannel?.id}
-        />
-      </motion.aside>
-
-      {/* LEFT CONTENT: Player */}
-      <main className="flex-1 h-[60vh] md:h-full p-4 md:p-6 lg:p-8 flex flex-col min-w-0 z-10">
-        <motion.div 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex-1 flex flex-col h-full"
-        >
-          {/* Top Bar / Logo Area */}
-          <header className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white shadow-lg shadow-primary/25">
-                <LayoutGrid className="w-6 h-6" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-display font-bold text-gray-900">
-                  StreamDeck
-                </h1>
-                <p className="text-xs font-medium text-gray-500 tracking-wider uppercase">Next-Gen Player</p>
-              </div>
+        {/* Header */}
+        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
+              <LayoutGrid className="w-5 h-5 text-primary" />
             </div>
-            
-            {isLoading && (
-              <div className="flex items-center gap-2 text-sm text-gray-600 bg-white/80 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm">
-                <Loader2 className="w-3 h-3 animate-spin" />
-                Loading Playlist...
-              </div>
-            )}
-          </header>
-
-          {/* Player Area */}
-          <div className="flex-1 min-h-0">
-            <VideoPlayer channel={selectedChannel} />
+            <h1 className="text-xl font-display font-bold text-foreground">IPTV</h1>
           </div>
-        </motion.div>
-      </main>
+          {isLoading && (
+            <Loader2 className="w-4 h-4 animate-spin text-primary" />
+          )}
+        </div>
+
+        {/* Back Button (when in channels view) */}
+        {viewMode === "channels" && (
+          <div className="px-4 py-3 border-b border-white/10">
+            <button
+              onClick={handleBackToCategories}
+              className="text-sm text-primary hover:text-primary/80 transition-colors"
+              data-testid="button-back-to-categories"
+            >
+              ← العودة للفئات
+            </button>
+          </div>
+        )}
+
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {viewMode === "categories" ? (
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+              {/* All Channels Button */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleCategoryClick("كل القنوات")}
+                className="px-4 py-3 rounded-2xl bg-accent/20 border border-accent/30 text-foreground hover:bg-accent/30 hover:border-accent/50 transition-all text-sm font-semibold text-center"
+                data-testid="button-category-all"
+              >
+                كل القنوات
+                <p className="text-xs text-muted-foreground mt-1">
+                  {allChannels.length.toLocaleString()} قناة
+                </p>
+              </motion.button>
+
+              {/* Category Buttons */}
+              {Object.entries(categorized).map(([category, channels]) => (
+                <motion.button
+                  key={category}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleCategoryClick(category)}
+                  className="px-4 py-3 rounded-2xl bg-primary/15 border border-primary/30 text-foreground hover:bg-primary/25 hover:border-primary/50 transition-all text-sm font-semibold text-center"
+                  data-testid={`button-category-${category}`}
+                >
+                  {category}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {channels.length} قناة
+                  </p>
+                </motion.button>
+              ))}
+            </div>
+          ) : (
+            <ChannelGrid
+              channels={displayedChannels}
+              isLoading={isLoading}
+              onSelectChannel={setSelectedChannel}
+              selectedChannelId={selectedChannel?.id}
+            />
+          )}
+        </div>
+      </motion.div>
+
+      {/* Player Section */}
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="flex-1 h-[55vh] lg:h-full p-4 lg:p-6 flex flex-col min-w-0"
+      >
+        <VideoPlayer channel={selectedChannel} />
+      </motion.div>
     </div>
   );
 }

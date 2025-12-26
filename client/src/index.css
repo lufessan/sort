@@ -5,22 +5,21 @@
 @tailwind utilities;
 
 :root {
-  /* HSL Color Palette - Light Mode Glassmorphism */
   --font-sans: 'DM Sans', sans-serif;
   --font-display: 'Outfit', sans-serif;
 
-  --background: 210 20% 98%;
-  --foreground: 222 47% 11%;
+  /* Dark Theme */
+  --background: 220 13% 9%;
+  --foreground: 0 0% 98%;
 
-  /* Vibrant Cyan-Blue Accent */
-  --primary: 199 89% 48%; /* Bright Cyan/Blue */
+  --primary: 199 89% 48%;
   --primary-foreground: 0 0% 100%;
   
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222 47% 11%;
+  --secondary: 220 20% 25%;
+  --secondary-foreground: 0 0% 98%;
   
-  --muted: 210 40% 90%;
-  --muted-foreground: 215 16% 47%;
+  --muted: 220 15% 40%;
+  --muted-foreground: 0 0% 70%;
   
   --accent: 262 83% 58%;
   --accent-foreground: 0 0% 100%;
@@ -28,8 +27,8 @@
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
+  --border: 220 20% 20%;
+  --input: 220 15% 18%;
   --ring: 199 89% 48%;
 
   --radius: 1rem;
@@ -39,12 +38,11 @@
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/20;
     font-family: var(--font-sans);
-    /* Abstract Gradient Background */
     background-image: 
-      radial-gradient(at 0% 0%, hsla(199, 89%, 48%, 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(262, 83%, 58%, 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(199, 89%, 48%, 0.1) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsla(262, 83%, 58%, 0.1) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, hsla(199, 89%, 48%, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(262, 83%, 58%, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(199, 89%, 48%, 0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(262, 83%, 58%, 0.05) 0px, transparent 50%);
     background-attachment: fixed;
   }
 
@@ -55,19 +53,24 @@
 }
 
 @layer components {
-  /* Glassmorphism Utilities */
   .glass-panel {
-    @apply bg-white/70 backdrop-blur-xl border border-white/50 shadow-xl shadow-black/5;
+    @apply bg-background/50 backdrop-blur-xl border border-white/10 shadow-xl shadow-black/50;
   }
   
   .glass-card {
-    @apply bg-white/40 backdrop-blur-md border border-white/60 shadow-lg shadow-black/5 
-           hover:bg-white/60 hover:scale-[1.01] hover:shadow-xl hover:border-white/80 transition-all duration-300;
+    @apply bg-secondary/30 backdrop-blur-md border border-white/10 shadow-lg shadow-black/20 
+           hover:bg-secondary/50 hover:scale-[1.02] hover:shadow-xl hover:border-white/20 transition-all duration-300;
   }
 
   .glass-input {
-    @apply bg-white/50 backdrop-blur-sm border border-black/5 rounded-xl px-4 py-3
-           focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-white/80 transition-all;
+    @apply bg-input backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3
+           focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-input/80 transition-all text-foreground;
+  }
+
+  .category-button {
+    @apply px-6 py-4 rounded-2xl bg-secondary/40 border border-white/10 text-foreground 
+           hover:bg-secondary/60 hover:border-white/20 transition-all duration-200 text-center font-semibold
+           cursor-pointer active:scale-95;
   }
 }
 
