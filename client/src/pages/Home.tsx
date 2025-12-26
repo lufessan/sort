@@ -56,15 +56,15 @@ export default function Home() {
                 <LayoutGrid className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+                <h1 className="text-2xl font-display font-bold text-gray-900">
                   StreamDeck
                 </h1>
-                <p className="text-xs font-medium text-muted-foreground tracking-wider uppercase">Next-Gen Player</p>
+                <p className="text-xs font-medium text-gray-500 tracking-wider uppercase">Next-Gen Player</p>
               </div>
             </div>
             
             {isLoading && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground bg-white/50 px-3 py-1.5 rounded-full border border-white/50">
+              <div className="flex items-center gap-2 text-sm text-gray-600 bg-white/80 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm">
                 <Loader2 className="w-3 h-3 animate-spin" />
                 Loading Playlist...
               </div>
